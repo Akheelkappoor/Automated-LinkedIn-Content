@@ -1,0 +1,535 @@
+{
+  "name": "Automated LinkedIn Content Creation with GPT-4 and DALL-E for Scheduled Posts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "7f5f9934-7ab8-43e9-a4cb-1583740a2e36",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        560,
+        240
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a Content Research Assistant helping me — an ambitious Business Analyst — grow my professional brand and attract job opportunities through high-value, insight-driven LinkedIn content.\n\nYour task is to generate content topics (not full posts) that help me:\n\nShowcase my business analysis skills and analytical mindset\n\nDemonstrate awareness of AI, automation, and digital transformation\n\nBuild credibility as a modern, data-driven problem solver\n\nStand out to recruiters, hiring managers, and project leads\n\n🔍 Focus Areas for Content Topics:\n\nAutomation in Business Analysis\n\nHow AI tools reshape requirements gathering, stakeholder management, and decision support.\n\nReal examples of automating analysis workflows, documentation, and reporting.\n\nModern Tools & Methods for Analysts\n\nLeveraging Notion, Power BI, Miro, or ChatGPT to streamline analysis, visualization, and insight generation.\n\nComparing traditional BA methods with no-code and AI-powered approaches.\n\nCareer Growth & Visibility for Analysts\n\nLessons from real projects, certifications, and frameworks that highlight practical value.\n\nHow to translate BA achievements into engaging, results-oriented LinkedIn stories.\n\nSystems Thinking & Strategic Impact\n\nShowing analytical depth through systems thinking, process optimization, and stakeholder alignment.\n\nHow to communicate insights that drive executive-level decisions.\n\nThe Future of Business Analysis\n\nThe evolution of the BA role in the age of AI and data literacy.\n\nWhy hybrid skills (soft + tech) define the next generation of business analysts.\n\n🧠 Goal for the Assistant:\nGenerate high-impact content topic ideas that:\n\nSpark curiosity and conversation on LinkedIn\n\nShowcase analytical thinking and adaptability\n\nBuild authority and professional visibility in the BA field\n\nNaturally attract engagement from recruiters and hiring managers\n\n✅ Your Output Per Topic:\n\nOnly One idea mantory idea, generate the following:\n\nTopic Title or Core Idea (1 line)\n\nShort Rationale (1–2 sentences on why this topic matters)\n\nSuggested Angle or Hook (1 LinkedIn-style framing or contrarian take)\n\n💡 Style Guide:\nKeep ideas insightful, actionable, and future-minded\n\nFavor founder-style energy: confident, sharp, and slightly contrarian when it adds value\n\nAvoid hype or jargon — focus on clarity, systemized insight, and utility",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "928e2771-ec9f-48ff-b34e-9c3ab9c4a828",
+      "name": "Content topic generator2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        784,
+        240
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[{\n \"title\": \"AI for Business Analysts: Automate Insights Before They’re Even Asked For\",\n \"rationale\": \"Most business analysts still spend hours manually collecting and formatting data. But AI tools can automate insight generation, freeing analysts to focus on strategic storytelling and decision influence — the real value creators.\",\n \"hook\": \"Stop chasing data. Let AI surface insights while you lead the conversation that shapes business outcomes.\"\n}]\n"
+      },
+      "id": "c7094a20-a96a-4db8-9ee4-95f86de800ac",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        928,
+        448
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a linkedin content creator and copywriter. Given the title {{ $json.output[0].title }}, the rationale {{ $json.output[0].rationale }}, suggested hook. Generate text content for a linkedin post. Also describe a suitable image for the post.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "id": "84b30f40-e7fa-4c46-9a82-39bbd2becfe0",
+      "name": "Content creator",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        1104,
+        240
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"post title\": \"Proud to Share My Latest Business Analysis Project\",\n  \"post content\": \"After weeks of stakeholder collaboration, data exploration, and process mapping, I’m excited to share a recent milestone from my business analysis journey — the successful launch of a new reporting and insights dashboard. The goal was to simplify decision-making by turning raw data into clear, actionable insights. This experience reinforced how powerful it is when analysis, teamwork, and technology come together to drive business impact. I’d love to hear how others are using data visualization and automation to improve their BA workflows!\",\n  \"image description\": \"A business analyst presenting a new insights dashboard on a large screen, displaying clean data visualizations and workflow diagrams, while team members discuss findings around a conference table.\"\n}\n"
+      },
+      "id": "cc1e5e3c-31de-4d1b-948b-89165fbc9769",
+      "name": "Structured Output Parser1",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        1248,
+        448
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an SEO specialist for LinkedIn. Your task is to generate highly relevant and effective hashtags for the following post. Consider the post's content, target audience, and current LinkedIn trends to maximize visibility and engagement.\n\n<post_title>{{ $json.output['post title'] }}</post_title>\n<post_content>{{ $json.output['post content'] }}</post_content>\n\nPlease generate:\n1. **3-5 broad, high-volume hashtags** (e.g., #AI, #Marketing, #Business)\n2. **3-5 niche-specific hashtags** that are directly relevant to the post's core topic (e.g., #SocialMediaAutomation, #ContentCreationAI, #LinkedInMarketingTips)\n3. **1-2 trending/topical hashtags** if applicable (e.g., #FutureOfWork, #DigitalTransformation)\n\nPresent them as a comma-separated list.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "f3901b98-cfe4-4d48-9e35-59161cbcfdd9",
+      "name": "Hashtag generator /SEO",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1712,
+        352
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"post title\": \"Exciting New Feature Launch 🚀\",\n  \"post content\": \"After months of collaboration, testing, and fine-tuning, we're thrilled to introduce our latest product feature: Smart Insights. It helps users uncover meaningful patterns in their data with just a few clicks. This wouldn't have been possible without our incredible team and supportive community. We're excited for what's next — and we'd love your feedback!\",\n  \"image description\": \"A laptop screen showcasing the new Smart Insights dashboard with colorful charts and graphs, surrounded by a team clapping in the background.\",\n\"Hashtags\":[\"#AI\",\"#Automation\"]\n}"
+      },
+      "id": "692b1c2e-bdc7-474e-859e-204970f512a6",
+      "name": "Structured Output Parser2",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        1904,
+        528
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "person": "RdFpWq0cPi",
+        "text": "={{ $('Data connecting').item.json.postContent }}",
+        "shareMediaCategory": "IMAGE",
+        "binaryPropertyName": "Data.jpg",
+        "additionalFields": {
+          "title": "={{ $('Data connecting').item.json.postTitle }}",
+          "visibility": "PUBLIC"
+        }
+      },
+      "id": "7c3a37b7-3227-43a7-86fb-c39e885570bf",
+      "name": "LinkedIn",
+      "type": "n8n-nodes-base.linkedIn",
+      "position": [
+        2592,
+        208
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "4BDd8Dgu76wAR0Q5",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        784,
+        432
+      ],
+      "id": "7ca9131a-6c95-4a18-af2a-fce3c2b65ba7",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "lhJvWgto5hK5Q16j",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        448
+      ],
+      "id": "66bfd055-b838-4f9a-beec-3a67ea55ca90",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "lhJvWgto5hK5Q16j",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        528
+      ],
+      "id": "47fdfb78-881d-4b54-9c0a-eb652abd27c1",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "lhJvWgto5hK5Q16j",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://imageapi.akkuakheel7.workers.dev",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer Akheelkappoor@7798"
+            },
+            {
+              "name": "Accept",
+              "value": "image/*"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.output['image description'] }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "Data.jpg"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1776,
+        96
+      ],
+      "id": "4c8c4c14-6b2a-4a98-9eb5-6ad00479e8d5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2160,
+        208
+      ],
+      "id": "16bf09bd-024e-468b-acba-7679e8571ba4",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simple hash function that works in n8n\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const char = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + char;\n    hash = hash & hash; // Convert to 32-bit integer\n  }\n  return Math.abs(hash).toString(16);\n}\n\nreturn items.map(item => {\n  const content = item.json.output['post content'];\n  const title = item.json.output['post title'];\n  \n  // Create unique hash from title + first 100 chars of content\n  const contentToHash = title + content.substring(0, 100);\n  const contentHash = simpleHash(contentToHash);\n  \n  console.log('Generated hash:', contentHash);\n  \n  return {\n    json: {\n      ...item.json,\n      contentHash: contentHash\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        240
+      ],
+      "id": "9d2af89e-c182-4a1f-a2a1-46c1a2c95933",
+      "name": "simpleHash"
+    },
+    {
+      "parameters": {
+        "jsCode": "// We receive 2 items: one from HTTP Request, one from Hashtag generator\nconst allItems = items;\n\nconsole.log('Total items received:', allItems.length);\n\n// Find the item with binary (from HTTP Request)\nconst imageItem = allItems.find(item => item.binary && Object.keys(item.binary).length > 0);\n\n// Find the item with hashtags (from Hashtag generator)\nconst hashtagItem = allItems.find(item => \n  item.json.output && item.json.output.Hashtags && Array.isArray(item.json.output.Hashtags)\n);\n\nif (!imageItem) {\n  throw new Error('No item with image found!');\n}\n\nconsole.log('Image item found:', !!imageItem);\nconsole.log('Hashtag item found:', !!hashtagItem);\n\n// Use the image item as base (it has the content)\nlet postContent = imageItem.json.output['post content'];\nlet postTitle = imageItem.json.output['post title'];\nlet contentHash = imageItem.json.contentHash; // ← ADD THIS LINE\n\n// Get hashtags from the hashtag item\nconst hashtags = hashtagItem ? hashtagItem.json.output.Hashtags : [];\n\n// Format content\npostContent = postContent.replace(/\\. ([A-Z])/g, '.\\n\\n$1').trim();\n\n// Add hashtags\nif (hashtags && hashtags.length > 0) {\n  postContent += '\\n\\n' + '─'.repeat(30) + '\\n\\n' + hashtags.join(' ');\n  console.log('Added', hashtags.length, 'hashtags');\n}\n\nconsole.log('Content hash:', contentHash); // ← ADD THIS LINE FOR DEBUGGING\n\n// Return with binary AND contentHash\nreturn [{\n  json: {\n    postContent: postContent,\n    postTitle: postTitle,\n    contentHash: contentHash  // ← ADD THIS LINE\n  },\n  binary: imageItem.binary\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2384,
+        208
+      ],
+      "id": "842da507-417e-46d0-bc38-cb5b3f7895a2",
+      "name": "Data connecting"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1GgSPYWOFBfDqGT3NdWU5-ckJI2HpmkfsEbJ49LScIhM",
+          "mode": "list",
+          "cachedResultName": "Al Posts Content Machine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GgSPYWOFBfDqGT3NdWU5-ckJI2HpmkfsEbJ49LScIhM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Creator",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GgSPYWOFBfDqGT3NdWU5-ckJI2HpmkfsEbJ49LScIhM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Content Hash": "={{ $('Data connecting').item.json.contentHash }}",
+            "post Title": "={{ $('Data connecting').item.json.postTitle }}",
+            "post Url": "={{ $json.urn }}"
+          },
+          "matchingColumns": [
+            "post Url"
+          ],
+          "schema": [
+            {
+              "id": "Content Hash",
+              "displayName": "Content Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post Title",
+              "displayName": "post Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post Url",
+              "displayName": "post Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW",
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2800,
+        208
+      ],
+      "id": "b64de9bc-4abf-468d-b1c1-1a7ce7b18ae3",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsWyOFpBvwkkCqD1",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Content creator": {
+      "main": [
+        [
+          {
+            "node": "simpleHash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Content topic generator2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hashtag generator /SEO": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Content topic generator2": {
+      "main": [
+        [
+          {
+            "node": "Content creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        []
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content creator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Hashtag generator /SEO",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content topic generator2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Hashtag generator /SEO",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Data connecting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "simpleHash": {
+      "main": [
+        [
+          {
+            "node": "Hashtag generator /SEO",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data connecting": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "f075961a-568d-4300-8a02-bc904a1da924",
+  "meta": {
+    "templateId": "4968",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "34b72e1bfc44f42b91102243d9dcacdae1c8c8ce12434069414d73d99704d961"
+  },
+  "id": "rWrtY3fwETrttg9u",
+  "tags": []
+}
