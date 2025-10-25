@@ -200,7 +200,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer Akheelkappoor@7798"
+              "value": "Bearer YOUR_API_KEY"
             },
             {
               "name": "Accept",
